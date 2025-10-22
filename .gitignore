@@ -1,0 +1,10 @@
+*.exe
+*.dll
+*.obj
+*.o
+*.a
+*.lib
+*.so
+*.pdb
+src/
+New folder/
