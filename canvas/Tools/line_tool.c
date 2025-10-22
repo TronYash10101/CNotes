@@ -1,4 +1,4 @@
-#include "headers/line_tool.h"
+#include "line_tool.h"
 #include "SDL3/SDL_render.h"
 #include <SDL3/SDL.h>
 #include <stdbool.h>
