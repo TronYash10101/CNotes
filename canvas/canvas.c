@@ -30,6 +30,33 @@ typedef struct {
   ToolType selected_tool;
 } ToolSelected;
 
+void log_tool(ToolSelected *current_tool) {
+
+  ToolType tool = current_tool->selected_tool;
+  switch (tool) {
+  case TOOL_LINE:
+    printf("line_tool\n");
+    break;
+  case TOOL_PEN:
+    printf("pen_tool\n");
+    break;
+  case TOOL_NONE:
+    printf("none_tool\n");
+    break;
+  }
+}
+
+bool check_bound(Button_Pos button, float click_x, float click_y) {
+  bool in_bound = false;
+  if (click_x >= button.bg_rcrect.x &&
+      click_x <= button.bg_rcrect.x + button.bg_rcrect.w &&
+      click_y >= button.bg_rcrect.y &&
+      click_y <= button.bg_rcrect.y + button.bg_rcrect.h) {
+    in_bound = true;
+  }
+  return in_bound;
+}
+
 int main(int argc, char *argv[]) {
   SDL_FRect *pixel_storage = NULL;
   Line *line_storage = NULL;
@@ -78,44 +105,36 @@ int main(int argc, char *argv[]) {
           hold = true;
         }
         if (event.button.button == SDL_BUTTON_LEFT &&
-            event.button.x >= pen_button.bg_rcrect.x &&
-            event.button.x <= pen_button.bg_rcrect.x + pen_button.bg_rcrect.w &&
-            event.button.y >= pen_button.bg_rcrect.y &&
-            event.button.y <= pen_button.bg_rcrect.y + pen_button.bg_rcrect.h) {
+            check_bound(pen_button, event.button.x, event.button.y)) {
           current_tool.selected_tool = TOOL_PEN;
           SDL_Log("Pen clicked");
         } else if (event.button.button == SDL_BUTTON_LEFT &&
-                   event.button.x >= line_button.bg_rcrect.x &&
-                   event.button.x <=
-                       line_button.bg_rcrect.x + line_button.bg_rcrect.w &&
-                   event.button.y >= line_button.bg_rcrect.y &&
-                   event.button.y <=
-                       line_button.bg_rcrect.y + line_button.bg_rcrect.h) {
-
+                   check_bound(line_button, event.button.x, event.button.y)) {
           current_tool.selected_tool = TOOL_LINE;
+
           SDL_Log("line clicked");
-        } else {
-          current_tool.selected_tool = TOOL_NONE;
+        } else if (!check_bound(line_button, event.button.x, event.button.y) &&
+                   hold && current_tool.selected_tool == TOOL_LINE) {
+          line_tool(&line_storage, &line_no, event.button.x, event.button.y);
         }
         break;
       case SDL_EVENT_MOUSE_BUTTON_UP:
         hold = false;
         break;
       case SDL_EVENT_MOUSE_MOTION:
-        if (hold && current_tool.selected_tool == TOOL_PEN) {
+        if (!check_bound(pen_button, event.motion.x, event.motion.y) && hold &&
+            current_tool.selected_tool == TOOL_PEN) {
           pencil_tool(renderer, &hold, &rect_no, &pixel_storage, event.motion.x,
                       event.motion.y, (float)(display_width * display_height));
-        } else if (hold && current_tool.selected_tool == TOOL_LINE) {
-          line_tool(&line_storage, &line_no, event.button.x, event.button.y);
         }
-
-        if (hold && line_no > 0) {
+        if (current_tool.selected_tool == TOOL_LINE && hold && line_no > 0) {
           (line_storage)[line_no - 1].x2 = event.motion.x;
           (line_storage)[line_no - 1].y2 = event.motion.y;
         }
         break;
       }
     }
+    log_tool(&current_tool);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     tool_panel(window, renderer, pencil_surface, line_surface, pencil_texture,
