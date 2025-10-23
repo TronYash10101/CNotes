@@ -12,5 +12,6 @@ typedef struct {
   float y2;
 } Line;
 
+extern Uint32 LINE_TOOL_EVENT;
 void line_tool(Line **line_storage, int *line_no_ptr, float x1, float y1);
 #endif // !LINE_TOOL

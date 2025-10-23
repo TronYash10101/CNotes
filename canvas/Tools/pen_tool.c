@@ -1,4 +1,4 @@
-#include "headers/pencil_tools.h"
+#include "pen_tool.h"
 #include <SDL3/SDL.h>
 #include <stdbool.h>
 #include <stdio.h>
