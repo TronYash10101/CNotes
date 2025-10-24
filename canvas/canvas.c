@@ -19,6 +19,7 @@ bool hold = false;
 
 char pencil_file[] = "D:/CNotes/canvas/UI/assets/pencil_texture.png";
 char line_file[] = "D:/CNotes/canvas/UI/assets/line_texture.png";
+char eraser_file[] = "D:/CNotes/canvas/UI/assets/eraser_texture.png";
 
 typedef enum {
   TOOL_NONE,
@@ -85,11 +86,15 @@ int main(int argc, char *argv[]) {
   }
 
   SDL_Surface *pencil_surface = IMG_Load(pencil_file);
-  SDL_Surface *line_surface = IMG_Load(line_file);
   SDL_Texture *pencil_texture =
       SDL_CreateTextureFromSurface(renderer, pencil_surface);
+  SDL_Surface *line_surface = IMG_Load(line_file);
   SDL_Texture *line_texture =
       SDL_CreateTextureFromSurface(renderer, line_surface);
+  SDL_Surface *eraser_surface = IMG_Load(eraser_file);
+  SDL_Texture *eraser_texture =
+      SDL_CreateTextureFromSurface(renderer, eraser_surface);
+
   SDL_GetWindowSizeInPixels(window, &display_width, &display_height);
 
   while (!done) {
@@ -134,11 +139,11 @@ int main(int argc, char *argv[]) {
         break;
       }
     }
-    log_tool(&current_tool);
+    // log_tool(&current_tool);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     tool_panel(window, renderer, pencil_surface, line_surface, pencil_texture,
-               line_texture, &done);
+               line_texture, eraser_surface, eraser_texture, &done);
     if (rect_no > 0) {
       SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
       SDL_RenderFillRects(renderer, pixel_storage, rect_no);

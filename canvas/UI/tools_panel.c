@@ -18,11 +18,16 @@ Button_Pos pen_button = {{0.0f, 0.0f, 500.0f, 500.0f},
 Button_Pos line_button = {{0.0f, 0.0f, 500.0f, 500.0f},
                           {600.0f, 200.0f, 50.0f, 50.0f},
                           {600.0f, 200.0f, 50.0f, 50.0f}};
+Button_Pos eraser_button = {{0.0f, 0.0f, 500.0f, 500.0f},
+                            {1000.0f, 200.0f, 50.0f, 50.0f},
+                            {1000.0f, 200.0f, 50.0f, 50.0f}};
+
 Uint32 PEN_TOOL_EVENT;
 Uint32 LINE_TOOL_EVENT;
 void tool_panel(SDL_Window *window, SDL_Renderer *renderer,
                 SDL_Surface *pencil_surface, SDL_Surface *line_surface,
                 SDL_Texture *pencil_texture, SDL_Texture *line_texture,
+                SDL_Surface *eraser_surface, SDL_Texture *eraser_texture,
                 bool *done) {
 
   int width = 1920;
@@ -36,4 +41,7 @@ void tool_panel(SDL_Window *window, SDL_Renderer *renderer,
             pen_button.srcrect, pen_button.bg_rcrect, pen_button.drcrect);
   button_ui(window, renderer, line_surface, line_texture, line_button.srcrect,
             line_button.bg_rcrect, line_button.drcrect);
+  button_ui(window, renderer, eraser_surface, eraser_texture,
+            eraser_button.srcrect, eraser_button.bg_rcrect,
+            eraser_button.drcrect);
 }

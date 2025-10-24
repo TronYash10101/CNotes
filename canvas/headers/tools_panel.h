@@ -24,6 +24,7 @@ extern Button_Pos line_button;
 extern void tool_panel(SDL_Window *window, SDL_Renderer *renderer,
                        SDL_Surface *pencil_surface, SDL_Surface *line_surface,
                        SDL_Texture *pencil_texture, SDL_Texture *line_texture,
+                       SDL_Surface *eraser_surface, SDL_Texture *eraser_texture,
                        bool *done);
 
 #endif // !TOOLS_PANEL
