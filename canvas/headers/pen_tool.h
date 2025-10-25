@@ -13,7 +13,7 @@ typedef struct {
   bool visible;
 } Pixel;
 
-void pencil_tool(SDL_Renderer *renderer, bool *hold_ptr, int *rect_no_ptr,
+void pencil_tool(SDL_Renderer *renderer, bool *hold_ptr, int *pixel_no_ptr,
                  Pixel **pixel_storage_ptr, float x_coord, float y_coord,
                  float display_size);
 

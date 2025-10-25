@@ -12,7 +12,7 @@ void button_ui(SDL_Window *window, SDL_Renderer *renderer,
     SDL_Log("SDL_Init failed: %s", SDL_GetError());
     return;
   }
-  SDL_SetRenderDrawColor(renderer, 255, 15, 255, 255);
+  SDL_SetRenderDrawColor(renderer, 91, 15, 255, 255);
   SDL_RenderFillRect(renderer, &b_srcrect);
   SDL_RenderTexture(renderer, texture, &srcrect, &dstrect);
   SDL_Event event;

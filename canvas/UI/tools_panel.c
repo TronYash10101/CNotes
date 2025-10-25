@@ -7,6 +7,7 @@
 #include "eraser_tool.h"
 #include "line_tool.h"
 #include "pen_tool.h"
+#include "rectangle_tool.h"
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <stdbool.h>
@@ -22,6 +23,9 @@ Button_Pos line_button = {{0.0f, 0.0f, 500.0f, 500.0f},
 Button_Pos eraser_button = {{0.0f, 0.0f, 500.0f, 500.0f},
                             {1000.0f, 200.0f, 50.0f, 50.0f},
                             {1000.0f, 200.0f, 50.0f, 50.0f}};
+Button_Pos rectangle_button = {{0.0f, 0.0f, 500.0f, 500.0f},
+                               {1400.0f, 200.0f, 50.0f, 50.0f},
+                               {1400.0f, 200.0f, 50.0f, 50.0f}};
 
 Uint32 PEN_TOOL_EVENT;
 Uint32 LINE_TOOL_EVENT;
@@ -29,6 +33,7 @@ void tool_panel(SDL_Window *window, SDL_Renderer *renderer,
                 SDL_Surface *pencil_surface, SDL_Surface *line_surface,
                 SDL_Texture *pencil_texture, SDL_Texture *line_texture,
                 SDL_Surface *eraser_surface, SDL_Texture *eraser_texture,
+                SDL_Surface *rectangle_surface, SDL_Texture *rectangle_texture,
                 bool *done) {
 
   int width = 1920;
@@ -45,4 +50,7 @@ void tool_panel(SDL_Window *window, SDL_Renderer *renderer,
   button_ui(window, renderer, eraser_surface, eraser_texture,
             eraser_button.srcrect, eraser_button.bg_rcrect,
             eraser_button.drcrect);
+  button_ui(window, renderer, rectangle_surface, rectangle_texture,
+            rectangle_button.srcrect, rectangle_button.bg_rcrect,
+            rectangle_button.drcrect);
 }

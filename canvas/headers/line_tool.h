@@ -4,12 +4,13 @@
 #include <stdbool.h>
 
 #ifndef LINE_TOOL
-
+#define LINE_TOOL
 typedef struct {
   float x1;
   float y1;
   float x2;
   float y2;
+  bool visible;
 } Line;
 
 extern Uint32 LINE_TOOL_EVENT;

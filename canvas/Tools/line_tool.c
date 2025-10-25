@@ -19,4 +19,5 @@ void line_tool(Line **line_storage, int *line_no_ptr, float x1, float y1) {
   current_line->y1 = y1;
   current_line->x2 = x1; // Initialize endpoint to start point (rubber banding)
   current_line->y2 = y1;
+  current_line->visible = true;
 }
