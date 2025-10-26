@@ -1,3 +1,4 @@
 -Isrc/include_image
 -Isrc/include 
+-Isrc/include_ttf
 -Icanvas/headers
