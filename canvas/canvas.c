@@ -125,7 +125,6 @@ int main(int argc, char *argv[]) {
         if (event.button.button == SDL_BUTTON_LEFT) {
           hold = true;
         }
-
         if (event.button.button == SDL_BUTTON_LEFT &&
             check_bound(pen_button, event.button.x, event.button.y)) {
           current_tool.selected_tool = TOOL_PEN;
