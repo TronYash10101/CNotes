@@ -2,3 +2,5 @@
 -Isrc/include 
 -Isrc/include_ttf
 -Icanvas/headers
+-Inotebook/headers
+
