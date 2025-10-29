@@ -5,6 +5,12 @@
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 
+#define icon_height 35
+#define icon_width 35
+#define button_height 45
+#define button_width 45
+#define button_gap 70.0f
+
 #ifndef TOOLS_PANEL
 #define TOOLS_PANEL
 
@@ -24,10 +30,10 @@ extern Button_Pos line_button;
 extern Button_Pos eraser_button;
 extern Button_Pos rectangle_button;
 extern void tool_panel(SDL_Window *window, SDL_Renderer *renderer,
-                       SDL_Surface *pencil_surface, SDL_Surface *line_surface,
                        SDL_Texture *pencil_texture, SDL_Texture *line_texture,
-                       SDL_Surface *eraser_surface, SDL_Texture *eraser_texture,
-                       SDL_Surface *rectangle_surface,
-                       SDL_Texture *rectangle_texture, bool *done);
+                       SDL_Texture *eraser_texture,
+                       SDL_Texture *rectangle_texture,
+                       SDL_Texture *tool_panel_texture, bool *done,
+                       bool *hovered);
 
 #endif // !TOOLS_PANEL

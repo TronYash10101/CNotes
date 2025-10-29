@@ -6,7 +6,7 @@
 #ifndef BUTTON_UI
 #define BUTTON_UI
 
-void button_ui(SDL_Window *window, SDL_Renderer *renderer,
-               SDL_Surface *image_surface, SDL_Texture *texture,
-               SDL_FRect srcrect, SDL_FRect b_srcrect, SDL_FRect dstrect);
+void button_ui(SDL_Window *window, SDL_Renderer *renderer, SDL_Texture *texture,
+               SDL_FRect srcrect, SDL_FRect b_srcrect, SDL_FRect dstrect,
+               bool *hovered);
 #endif // !BUTTON_UI

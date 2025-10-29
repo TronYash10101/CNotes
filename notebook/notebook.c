@@ -11,7 +11,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 char title[] = "Notebook";
-int text_width, text_height;
+int text_width, text_height = 0;
 int main(int argc, char *argv[]) {
   SDL_Init(SDL_INIT_VIDEO);
   TTF_Init();
@@ -68,8 +68,9 @@ int main(int argc, char *argv[]) {
           word_buff.cursor -= 1;
           word_buff.buffer[word_buff.cursor] = '\0';
         } else if (event.key.key == SDLK_RETURN) {
-          word_buff.buffer[word_buff.cursor++] =
+          word_buff.buffer[word_buff.cursor] =
               '\n'; // add newline, then move cursor
+          word_buff.cursor += 1;
           word_buff.buffer[word_buff.cursor] = '\0'; // always null-terminate
         }
         break;
@@ -89,12 +90,11 @@ int main(int argc, char *argv[]) {
       }
       myText = TTF_CreateText(engine, font, word_buff.buffer, 0);
       TTF_GetTextSize(myText, &text_width, &text_height);
-      render_caret(renderer, text_height, text_width, text_height);
+      render_caret(renderer, text_height, text_width, 5);
     }
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     TTF_DrawRendererText(myText, 0, 5);
     // SDL_RenderRect(renderer, &notebook_area);
-
     SDL_RenderPresent(renderer);
   }
   if (myText) {

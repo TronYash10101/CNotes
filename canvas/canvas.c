@@ -1,3 +1,4 @@
+#include "SDL3/SDL_init.h"
 #include "SDL3/SDL_log.h"
 #include "SDL3/SDL_render.h"
 #include "eraser_tool.h"
@@ -9,21 +10,26 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #define pixel_size 3
 
 int display_height;
 int display_width;
 char WINDOW_NAME[] = "Canvas";
+
 int pixel_no = 0;
 int rect_no = 0;
 int line_no = 0;
+
 bool done = false;
 bool hold = false;
+bool hovered = false;
 
 char pencil_file[] = "D:/CNotes/canvas/UI/assets/pencil_texture.png";
 char line_file[] = "D:/CNotes/canvas/UI/assets/line_texture.png";
 char eraser_file[] = "D:/CNotes/canvas/UI/assets/eraser_texture.png";
 char rectangle_file[] = "D:/CNotes/canvas/UI/assets/rectangle_texture.png";
+char tool_panel_bg_file[] = "D:/CNotes/canvas/UI/assets/tools_panel_bg.png";
 
 typedef enum {
   TOOL_NONE,
@@ -76,9 +82,6 @@ int main(int argc, char *argv[]) {
   Rectangle *rectangle_storage = NULL;
 
   ToolSelected current_tool = {.selected_tool = TOOL_NONE};
-
-  ToolSelected current_tool = {.selected_tool = TOOL_NONE};
-
   if (!SDL_Init(SDL_INIT_VIDEO)) {
     SDL_Log("SDL_Init failed: %s", SDL_GetError());
     return -1;
@@ -103,6 +106,7 @@ int main(int argc, char *argv[]) {
   SDL_Surface *pencil_surface = IMG_Load(pencil_file);
   SDL_Texture *pencil_texture =
       SDL_CreateTextureFromSurface(renderer, pencil_surface);
+  // SDL_DestroySurface(tool_panel_surface);
   SDL_Surface *line_surface = IMG_Load(line_file);
   SDL_Texture *line_texture =
       SDL_CreateTextureFromSurface(renderer, line_surface);
@@ -113,11 +117,15 @@ int main(int argc, char *argv[]) {
   SDL_Texture *rectangle_texture =
       SDL_CreateTextureFromSurface(renderer, rectangle_surface);
 
+  SDL_Surface *tool_panel_surface = IMG_Load(tool_panel_bg_file);
+  SDL_Texture *tool_panel_texture =
+      SDL_CreateTextureFromSurface(renderer, tool_panel_surface);
   SDL_GetWindowSizeInPixels(window, &display_width, &display_height);
 
+  // nuklear iniitialization
+  struct nk_font_atlas *atlas;
   while (!done) {
     SDL_Event event;
-
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
       case SDL_EVENT_QUIT:
@@ -190,18 +198,21 @@ int main(int argc, char *argv[]) {
           (rectangle_storage)[rect_no - 1].Rectangle.h =
               event.motion.y - rectangle_storage[rect_no - 1].Rectangle.y;
         }
-
+        if (check_bound(pen_button, event.motion.x, event.motion.y) ||
+            check_bound(eraser_button, event.motion.x, event.motion.y) ||
+            check_bound(line_button, event.motion.x, event.motion.y) ||
+            check_bound(rectangle_button, event.motion.x, event.motion.y)) {
+          hovered = true;
+        }
         break;
       }
     }
     // log_tool(&current_tool);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 18, 18, 18, 255);
     SDL_RenderClear(renderer);
 
-    tool_panel(window, renderer, pencil_surface, line_surface, pencil_texture,
-               line_texture, eraser_surface, eraser_texture, rectangle_surface,
-               rectangle_texture, &done);
-
+    tool_panel(window, renderer, pencil_texture, line_texture, eraser_texture,
+               rectangle_texture, tool_panel_texture, &done, &hovered);
     if (pixel_no > 0) {
       for (int i = 0; i < pixel_no; i++) {
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -230,7 +241,6 @@ int main(int argc, char *argv[]) {
     }
     SDL_RenderPresent(renderer);
   }
-
   free(pixel_storage);
   free(line_storage);
   free(rectangle_storage);
