@@ -2,6 +2,11 @@
 #include "SDL3/SDL_log.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_video.h"
+#include "button_ui.h"
+#include "eraser_tool.h"
+#include "line_tool.h"
+#include "rectangle_tool.h"
+#include "types.h"
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 
@@ -32,8 +37,8 @@ extern Button_Pos rectangle_button;
 extern void tool_panel(SDL_Window *window, SDL_Renderer *renderer,
                        SDL_Texture *pencil_texture, SDL_Texture *line_texture,
                        SDL_Texture *eraser_texture,
-                       SDL_Texture *rectangle_texture,
-                       SDL_Texture *tool_panel_texture, bool *done,
-                       bool *hovered);
+                       SDL_Texture *rectangle_texture, bool *done,
+                       float *mouse_x, float *mouse_y,
+                       ToolSelected *selected_tool);
 
 #endif // !TOOLS_PANEL
