@@ -23,14 +23,15 @@ void render_caret(SDL_Renderer *renderer, float cursor_h, float cursor_x,
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, caret_alpha);
   SDL_RenderFillRect(renderer, &caret);
 }
-void typing(Buffer *buffer, const char *typed_char) {
+void typing(LineBuffer *line_buffer, WordBuffer *curr_word, int *cursor_x,
+            const char *typed_char, int *line_count) {
   // Returns text in the memory
   if (typed_char == NULL) {
     SDL_Log("Error");
   }
-  if (buffer->cursor + strlen(typed_char) < sizeof(buffer->buffer) - 1) {
-    memcpy(&buffer->buffer[buffer->cursor], typed_char,
-           strlen(typed_char)); // Also works without memory copy
-    buffer->cursor += strlen(typed_char);
+  if (*cursor_x + strlen(typed_char) < sizeof(curr_word->buffer) - 1) {
+    memcpy(&curr_word->buffer[*cursor_x], typed_char, strlen(typed_char));
+    *cursor_x += strlen(typed_char);
+    curr_word->buffer[*cursor_x] = '\0';
   }
 }
