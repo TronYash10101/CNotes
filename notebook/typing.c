@@ -24,14 +24,50 @@ void render_caret(SDL_Renderer *renderer, float cursor_h, float cursor_x,
   SDL_RenderFillRect(renderer, &caret);
 }
 void typing(LineBuffer *line_buffer, WordBuffer *curr_word, int *cursor_x,
-            const char *typed_char, int *line_count) {
-  // Returns text in the memory
+            const char *typed_char, int *line_count,
+            int *curr_line_word_count) {
   if (typed_char == NULL) {
     SDL_Log("Error");
   }
+
+  if (typed_char[0] == '\b') {
+    if (*cursor_x > 0) {
+      *cursor_x -= 1;
+      curr_word->buffer[*cursor_x] = '\0';
+    }
+
+    const char *last_newline = strrchr(curr_word->buffer, '\n');
+    const char *current_line =
+        last_newline ? last_newline + 1 : curr_word->buffer;
+    memset(line_buffer, 0, sizeof(*line_buffer));
+    strcpy(line_buffer->word_buffer[0].buffer, current_line);
+
+    if (*curr_line_word_count > 0) {
+      *curr_line_word_count -= 1;
+    } else if (*curr_line_word_count == 0 && *line_count > 1) {
+      *line_count -= 1;
+    }
+    *curr_line_word_count = strlen(current_line);
+    SDL_Log("words %d && line no.:- %d", *curr_line_word_count, *line_count);
+    return;
+  }
+
   if (*cursor_x + strlen(typed_char) < sizeof(curr_word->buffer) - 1) {
     memcpy(&curr_word->buffer[*cursor_x], typed_char, strlen(typed_char));
     *cursor_x += strlen(typed_char);
     curr_word->buffer[*cursor_x] = '\0';
+  }
+
+  const char *last_newline = strrchr(curr_word->buffer, '\n');
+  const char *current_line =
+      last_newline ? last_newline + 1 : curr_word->buffer;
+
+  memset(line_buffer, 0, sizeof(*line_buffer));
+  strcpy(line_buffer->word_buffer[0].buffer, current_line);
+  *curr_line_word_count += 1;
+
+  if (*cursor_x > 0 && curr_word->buffer[*cursor_x - 2] == '\n') {
+    *line_count += 1;
+    *curr_line_word_count = 0;
   }
 }

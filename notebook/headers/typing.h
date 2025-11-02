@@ -11,7 +11,7 @@ typedef struct {
 } WordBuffer;
 
 typedef struct {
-  WordBuffer word_buffer[1024];
+  WordBuffer word_buffer[1];
 } LineBuffer;
 
 typedef struct {
@@ -28,5 +28,5 @@ void render_caret(SDL_Renderer *renderer, float cursor_h, float cursor_x,
                   float cursor_y);
 
 void typing(LineBuffer *line_buffer, WordBuffer *curr_word, int *cursor_x,
-            const char *typed_char, int *word_count);
+            const char *typed_char, int *word_count, int *curr_line_word_count);
 #endif // !TYPING

@@ -25,7 +25,8 @@ int main(int argc, char *argv[]) {
   bool done = false;
   bool istyping = false;
   int cursor_x = 0; // actual position of cursor in x
-  static int line_count = 0;
+  static int line_count = 1;
+  static int curr_line_word_count = 0;
 
   LineBuffer line_buffer;
   WordBuffer curr_word;
@@ -52,8 +53,8 @@ int main(int argc, char *argv[]) {
   }
   TTF_SetFontSize(font, font_size);
 
-  // Create a text object
   TTF_Text *word;
+  TTF_Text *cursor_word;
 
   if (!SDL_SetTextInputArea(window, &notebook_input, 1)) {
     SDL_Log("Error while creating input area");
@@ -75,12 +76,21 @@ int main(int argc, char *argv[]) {
         } else if (event.key.key == SDLK_ESCAPE) {
           istyping = false;
           SDL_StopTextInput(window);
+        } else if (event.key.key == SDLK_RETURN) {
+          curr_word.buffer[cursor_x] = '\n';
+          cursor_x += 1;
+          curr_word.buffer[cursor_x] = '\0';
+        } else if (event.key.key == SDLK_BACKSPACE) {
+          typing(&line_buffer, &curr_word, &cursor_x, "\b", &line_count,
+                 &curr_line_word_count);
         }
+        SDL_Log("%c", line_buffer.word_buffer[0].buffer[cursor_x]);
         break;
 
       case SDL_EVENT_TEXT_INPUT:;
         const char *typed_char = event.text.text;
-        typing(&line_buffer, &curr_word, &cursor_x, typed_char, &line_count);
+        typing(&line_buffer, &curr_word, &cursor_x, typed_char, &line_count,
+               &curr_line_word_count);
         break;
       }
     }
@@ -92,13 +102,12 @@ int main(int argc, char *argv[]) {
         TTF_DestroyText(word);
       }
       word = TTF_CreateText(engine, font, curr_word.buffer, 0);
+      cursor_word =
+          TTF_CreateText(engine, font, line_buffer.word_buffer[0].buffer, 0);
+      TTF_GetTextSize(cursor_word, &text_width, &text_height);
 
-      SDL_Log("%s", curr_word.buffer);
-      TTF_GetTextSize(word, &text_width, &text_height);
-      // draw text
-
-      // draw caret at end of text
-      render_caret(renderer, text_height, text_width, 0);
+      render_caret(renderer, text_height, text_width,
+                   (line_skip * (line_count - 1)));
     }
     TTF_DrawRendererText(word, 0, 0);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
