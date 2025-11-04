@@ -21,6 +21,11 @@ typedef struct {
 #ifndef TYPING
 #define TYPING
 
+#define UP_SYMBOL "<1>"
+#define DOWN_SYMBOL "<2>"
+#define LEFT_SYMBOL "<3>"
+#define RIGHT_SYMBOL "<4>"
+
 #define CARET_HEIGHT 20
 #define CARET_WIDTH 2
 

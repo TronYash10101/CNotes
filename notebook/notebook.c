@@ -83,8 +83,13 @@ int main(int argc, char *argv[]) {
         } else if (event.key.key == SDLK_BACKSPACE) {
           typing(&line_buffer, &curr_word, &cursor_x, "\b", &line_count,
                  &curr_line_word_count);
+        } else if (event.key.key == SDLK_LEFT) {
+          typing(&line_buffer, &curr_word, &cursor_x, LEFT_SYMBOL, &line_count,
+                 &curr_line_word_count);
+        } else if (event.key.key == SDLK_RIGHT) {
+          typing(&line_buffer, &curr_word, &cursor_x, RIGHT_SYMBOL, &line_count,
+                 &curr_line_word_count);
         }
-        SDL_Log("%c", line_buffer.word_buffer[0].buffer[cursor_x]);
         break;
 
       case SDL_EVENT_TEXT_INPUT:;
@@ -96,7 +101,6 @@ int main(int argc, char *argv[]) {
     }
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderClear(renderer);
-
     if (istyping) {
       if (word) {
         TTF_DestroyText(word);
@@ -105,7 +109,7 @@ int main(int argc, char *argv[]) {
       cursor_word =
           TTF_CreateText(engine, font, line_buffer.word_buffer[0].buffer, 0);
       TTF_GetTextSize(cursor_word, &text_width, &text_height);
-
+      SDL_Log("%s", line_buffer.word_buffer->buffer);
       render_caret(renderer, text_height, text_width,
                    (line_skip * (line_count - 1)));
     }
