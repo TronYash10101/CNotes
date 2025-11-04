@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
         break;
       }
     }
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_SetRenderDrawColor(renderer, 18, 18, 18, 0);
     SDL_RenderClear(renderer);
     if (istyping) {
       if (word) {
@@ -109,7 +109,6 @@ int main(int argc, char *argv[]) {
       cursor_word =
           TTF_CreateText(engine, font, line_buffer.word_buffer[0].buffer, 0);
       TTF_GetTextSize(cursor_word, &text_width, &text_height);
-      SDL_Log("%s", line_buffer.word_buffer->buffer);
       render_caret(renderer, text_height, text_width,
                    (line_skip * (line_count - 1)));
     }

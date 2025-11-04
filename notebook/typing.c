@@ -24,7 +24,6 @@ void render_caret(SDL_Renderer *renderer, float cursor_h, float cursor_x,
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, caret_alpha);
   SDL_RenderFillRect(renderer, &caret);
 }
-
 void typing(LineBuffer *line_buffer, WordBuffer *curr_word, int *cursor_x,
             const char *typed_char, int *line_count,
             int *curr_line_word_count) {
@@ -34,7 +33,7 @@ void typing(LineBuffer *line_buffer, WordBuffer *curr_word, int *cursor_x,
     SDL_Log("Error");
   }
 
-  // Backspace logic
+  // BACKSPACE LOGIC
   if (typed_char[0] == '\b') {
     if (*cursor_x > 0) {
       *cursor_x -= 1;
@@ -73,6 +72,7 @@ void typing(LineBuffer *line_buffer, WordBuffer *curr_word, int *cursor_x,
   }
   SDL_Log("%d", left_typing);
 
+  // TYPING LOGIC
   if (strcmp(typed_char, UP_SYMBOL) != 0 &&
       strcmp(typed_char, RIGHT_SYMBOL) != 0 &&
       strcmp(typed_char, LEFT_SYMBOL) != 0 &&
@@ -84,13 +84,24 @@ void typing(LineBuffer *line_buffer, WordBuffer *curr_word, int *cursor_x,
       memmove(&curr_word->buffer[*cursor_x + 1], &curr_word->buffer[*cursor_x],
               strlen(&curr_word->buffer[*cursor_x]) + 1);
       curr_word->buffer[*cursor_x] = *typed_char;
-      const char *last_newline = strrchr(curr_word->buffer, '\n');
-      const char *current_line = last_newline ? last_newline + 1 : typed_char;
-      line_buffer->word_buffer->buffer[*curr_line_word_count] = *current_line;
+      if (curr_word->buffer[*cursor_x - 1] == '\n') {
+        SDL_Log("triggered");
+        memset(line_buffer, 0, sizeof(*line_buffer));
+        strcpy(line_buffer->word_buffer->buffer,
+               &curr_word->buffer[*cursor_x + 1]);
+        curr_word->buffer[*cursor_x + 1] = '\0';
+        *line_count += 1;
+        *curr_line_word_count = 0;
+      } else {
+        line_buffer->word_buffer->buffer[*curr_line_word_count] = *typed_char;
+        *curr_line_word_count += 1;
+        *cursor_x += 1;
+      }
+      SDL_Log("line_buffer:-\n%s\n copied_string:-\n%s",
+              line_buffer->word_buffer->buffer,
+              strcpy(line_buffer->word_buffer->buffer,
+                     &curr_word->buffer[*cursor_x + 1]));
 
-      *curr_line_word_count += 1;
-      *cursor_x += 1;
-      // left_typing = false;
       return;
     }
 
@@ -100,15 +111,14 @@ void typing(LineBuffer *line_buffer, WordBuffer *curr_word, int *cursor_x,
       memmove(&curr_word->buffer[*cursor_x + 1], &curr_word->buffer[*cursor_x],
               strlen(&curr_word->buffer[*cursor_x]) + 1);
       curr_word->buffer[*cursor_x] = *typed_char;
-      const char *last_newline = strrchr(curr_word->buffer, '\n');
-      const char *current_line = last_newline ? last_newline + 1 : typed_char;
-      line_buffer->word_buffer->buffer[*curr_line_word_count] = *current_line;
+
+      line_buffer->word_buffer->buffer[*curr_line_word_count] = *typed_char;
 
       *curr_line_word_count += 1;
       *cursor_x += 1;
-      // right_typing = false;
       return;
     }
+
     // Add to buffer on typing
     if (*cursor_x + strlen(typed_char) < sizeof(curr_word->buffer) - 1) {
       memcpy(&curr_word->buffer[*cursor_x], typed_char, strlen(typed_char));
