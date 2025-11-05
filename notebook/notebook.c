@@ -26,10 +26,13 @@ int main(int argc, char *argv[]) {
   bool istyping = false;
   int cursor_x = 0; // actual position of cursor in x
   static int line_count = 1;
+  static int prev_line_count = 1;
   static int curr_line_word_count = 0;
 
   LineBuffer line_buffer;
   WordBuffer curr_word;
+  SDL_FRect *line_bg_storage = malloc(1 * sizeof(SDL_FRect));
+
   SDL_Window *window = SDL_CreateWindow(
       title, 1920, 1080, SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE);
   SDL_Renderer *renderer = SDL_CreateRenderer(window, NULL);
@@ -61,6 +64,7 @@ int main(int argc, char *argv[]) {
   };
   int line_skip = TTF_GetFontLineSkip(font);
   while (!done) {
+    prev_line_count = line_count;
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
@@ -99,9 +103,20 @@ int main(int argc, char *argv[]) {
         break;
       }
     }
-    SDL_SetRenderDrawColor(renderer, 18, 18, 18, 0);
+    SDL_SetRenderDrawColor(renderer, 12, 12, 12, 255);
     SDL_RenderClear(renderer);
+
     if (istyping) {
+      if (prev_line_count != line_count) {
+        SDL_FRect *new_line_bg_storage =
+            realloc(line_bg_storage, line_count * sizeof(SDL_FRect));
+        if (new_line_bg_storage != NULL) {
+          line_bg_storage = new_line_bg_storage;
+        } else {
+          return 0;
+        }
+        prev_line_count = line_count;
+      }
       if (word) {
         TTF_DestroyText(word);
       }
@@ -112,13 +127,25 @@ int main(int argc, char *argv[]) {
       render_caret(renderer, text_height, text_width,
                    (line_skip * (line_count - 1)));
     }
+    TTF_SetTextColor(word, 255, 255, 255, 255);
     TTF_DrawRendererText(word, 0, 0);
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+    for (int line_no = 0; line_no < line_count; line_no++) {
+      line_bg_storage[line_no].x = 0;
+      line_bg_storage[line_no].y = line_skip * (line_no + 1);
+      line_bg_storage[line_no].w = 1920;
+      line_bg_storage[line_no].h = 1;
+      SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+      SDL_RenderFillRect(renderer, &line_bg_storage[line_no]);
+    }
+    /* SDL_Log("%s", line_buffer.word_buffer->buffer);
+    SDL_Log("%s", curr_word.buffer); */
     SDL_RenderPresent(renderer);
   }
   if (word) {
     TTF_DestroyText(word);
   }
+  free(line_bg_storage);
   TTF_CloseFont(font);
   TTF_DestroyRendererTextEngine(engine);
   TTF_Quit();

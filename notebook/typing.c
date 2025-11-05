@@ -24,6 +24,7 @@ void render_caret(SDL_Renderer *renderer, float cursor_h, float cursor_x,
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, caret_alpha);
   SDL_RenderFillRect(renderer, &caret);
 }
+
 void typing(LineBuffer *line_buffer, WordBuffer *curr_word, int *cursor_x,
             const char *typed_char, int *line_count,
             int *curr_line_word_count) {
@@ -84,24 +85,9 @@ void typing(LineBuffer *line_buffer, WordBuffer *curr_word, int *cursor_x,
       memmove(&curr_word->buffer[*cursor_x + 1], &curr_word->buffer[*cursor_x],
               strlen(&curr_word->buffer[*cursor_x]) + 1);
       curr_word->buffer[*cursor_x] = *typed_char;
-      if (curr_word->buffer[*cursor_x - 1] == '\n') {
-        SDL_Log("triggered");
-        memset(line_buffer, 0, sizeof(*line_buffer));
-        strcpy(line_buffer->word_buffer->buffer,
-               &curr_word->buffer[*cursor_x + 1]);
-        curr_word->buffer[*cursor_x + 1] = '\0';
-        *line_count += 1;
-        *curr_line_word_count = 0;
-      } else {
-        line_buffer->word_buffer->buffer[*curr_line_word_count] = *typed_char;
-        *curr_line_word_count += 1;
-        *cursor_x += 1;
-      }
-      SDL_Log("line_buffer:-\n%s\n copied_string:-\n%s",
-              line_buffer->word_buffer->buffer,
-              strcpy(line_buffer->word_buffer->buffer,
-                     &curr_word->buffer[*cursor_x + 1]));
-
+      line_buffer->word_buffer->buffer[*curr_line_word_count] = *typed_char;
+      *curr_line_word_count += 1;
+      *cursor_x += 1;
       return;
     }
 
