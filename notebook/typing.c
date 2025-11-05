@@ -30,6 +30,7 @@ void typing(LineBuffer *line_buffer, WordBuffer *curr_word, int *cursor_x,
             int *curr_line_word_count) {
   static bool left_typing = false;
   static bool right_typing = false;
+  char temp_cpy[500];
   if (typed_char == NULL) {
     SDL_Log("Error");
   }
@@ -82,12 +83,30 @@ void typing(LineBuffer *line_buffer, WordBuffer *curr_word, int *cursor_x,
     // Left typing
     if (*cursor_x + strlen(typed_char) < sizeof(curr_word->buffer) - 1 &&
         left_typing) {
+
       memmove(&curr_word->buffer[*cursor_x + 1], &curr_word->buffer[*cursor_x],
               strlen(&curr_word->buffer[*cursor_x]) + 1);
       curr_word->buffer[*cursor_x] = *typed_char;
-      line_buffer->word_buffer->buffer[*curr_line_word_count] = *typed_char;
-      *curr_line_word_count += 1;
-      *cursor_x += 1;
+      // SDL_Log("%s", line_buffer->word_buffer[0].buffer);
+      // Store text after cursor
+      strcpy(temp_cpy, &curr_word->buffer[*cursor_x + 1]);
+
+      if (*typed_char == '\n') {
+        memset(line_buffer->word_buffer[0].buffer, 0, sizeof(LineBuffer));
+
+        strncpy(line_buffer->word_buffer[0].buffer,
+                &curr_word->buffer[*cursor_x + 1],
+                sizeof(line_buffer->word_buffer[0].buffer) - 1);
+        line_buffer->word_buffer[0]
+            .buffer[sizeof(line_buffer->word_buffer[0].buffer) - 1] = '\0';
+        *curr_line_word_count = 0;
+        *line_count += 1;
+        *cursor_x += 1;
+      } else {
+        line_buffer->word_buffer[0].buffer[*curr_line_word_count] = *typed_char;
+        (*curr_line_word_count)++;
+        (*cursor_x)++;
+      }
       return;
     }
 

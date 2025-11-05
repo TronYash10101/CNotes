@@ -81,9 +81,11 @@ int main(int argc, char *argv[]) {
           istyping = false;
           SDL_StopTextInput(window);
         } else if (event.key.key == SDLK_RETURN) {
-          curr_word.buffer[cursor_x] = '\n';
+          /* curr_word.buffer[cursor_x] = '\n';
           cursor_x += 1;
-          curr_word.buffer[cursor_x] = '\0';
+          curr_word.buffer[cursor_x] = '\0'; */
+          typing(&line_buffer, &curr_word, &cursor_x, "\n", &line_count,
+                 &curr_line_word_count);
         } else if (event.key.key == SDLK_BACKSPACE) {
           typing(&line_buffer, &curr_word, &cursor_x, "\b", &line_count,
                  &curr_line_word_count);
@@ -138,8 +140,8 @@ int main(int argc, char *argv[]) {
       SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
       SDL_RenderFillRect(renderer, &line_bg_storage[line_no]);
     }
-    /* SDL_Log("%s", line_buffer.word_buffer->buffer);
-    SDL_Log("%s", curr_word.buffer); */
+    // /* SDL_Log("%s", line_buffer.word_buffer->buffer);
+    // SDL_Log("%s", curr_word.buffer);
     SDL_RenderPresent(renderer);
   }
   if (word) {
