@@ -1,5 +1,22 @@
 #include "canvas.h"
-#include "SDL3/SDL_oldnames.h"
+#include "SDL3/SDL_log.h"
+
+char WINDOW_NAME[] = "Canvas";
+
+int pixel_no = 0;
+int rect_no = 0;
+int line_no = 0;
+
+static bool hold = false;
+float hover_x = 0.0f;
+float hover_y = 0.0f;
+
+char pencil_file[] = "D:/CNotes/canvas/UI/assets/pencil_texture.png";
+char line_file[] = "D:/CNotes/canvas/UI/assets/line_texture.png";
+char eraser_file[] = "D:/CNotes/canvas/UI/assets/eraser_texture.png";
+char rectangle_file[] = "D:/CNotes/canvas/UI/assets/rectangle_texture.png";
+
+int display_height, display_width;
 
 void log_tool(ToolSelected *current_tool) {
 
@@ -33,172 +50,127 @@ bool check_bound(Button_Pos button, float click_x, float click_y) {
   }
   return in_bound;
 }
+int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
+           SDL_Event *event_ptr, Pixel **pixel_storage, Line **line_storage,
+           Rectangle **rectangle_storage, SDL_Texture *pencil_texture,
+           SDL_Texture *line_texture, SDL_Texture *eraser_texture,
+           SDL_Texture *rectangle_texture) {
+  /* Pixel *pixel_storage = *pixel_storage_ptr;
+  Line *line_storage = *line_storage_ptr;
+  Rectangle *rectangle_storage = *rectangle_storage_ptr; */
 
-int main(int argc, char *argv[]) {
-  Pixel *pixel_storage = NULL;
-  Line *line_storage = NULL;
-  Rectangle *rectangle_storage = NULL;
-
-  ToolSelected current_tool = {.selected_tool = TOOL_NONE};
-  if (!SDL_Init(SDL_INIT_VIDEO)) {
-    SDL_Log("SDL_Init failed: %s", SDL_GetError());
-    return -1;
-  }
-
-  SDL_Window *window = SDL_CreateWindow(
-      WINDOW_NAME, 1920, 1080, SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
-  if (!window) {
-    SDL_Log("Failed to create window: %s", SDL_GetError());
-    SDL_Quit();
-    return -1;
-  }
-
-  SDL_Renderer *renderer = SDL_CreateRenderer(window, NULL);
-  if (!renderer) {
-    SDL_Log("Failed to create renderer: %s", SDL_GetError());
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-    return -1;
-  }
-
-  SDL_Surface *pencil_surface = IMG_Load(pencil_file);
-  SDL_Texture *pencil_texture =
-      SDL_CreateTextureFromSurface(renderer, pencil_surface);
-  // SDL_DestroySurface(tool_panel_surface);
-  SDL_Surface *line_surface = IMG_Load(line_file);
-  SDL_Texture *line_texture =
-      SDL_CreateTextureFromSurface(renderer, line_surface);
-  SDL_Surface *eraser_surface = IMG_Load(eraser_file);
-  SDL_Texture *eraser_texture =
-      SDL_CreateTextureFromSurface(renderer, eraser_surface);
-  SDL_Surface *rectangle_surface = IMG_Load(rectangle_file);
-  SDL_Texture *rectangle_texture =
-      SDL_CreateTextureFromSurface(renderer, rectangle_surface);
+  static ToolSelected current_tool = {.selected_tool = TOOL_NONE};
 
   SDL_GetWindowSizeInPixels(window, &display_width, &display_height);
 
-  while (!done) {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-      switch (event.type) {
-      case SDL_EVENT_QUIT:
-        done = true;
-        break;
-      case SDL_EVENT_MOUSE_BUTTON_DOWN:
-        if (event.button.button == SDL_BUTTON_LEFT) {
-          hold = true;
-        }
-        if (event.button.button == SDL_BUTTON_LEFT &&
-            check_bound(pen_button, event.button.x, event.button.y)) {
-          current_tool.selected_tool = TOOL_PEN;
-          SDL_Log("Pen clicked");
-        } else if (event.button.button == SDL_BUTTON_LEFT &&
-                   check_bound(line_button, event.button.x, event.button.y)) {
-          current_tool.selected_tool = TOOL_LINE;
+  SDL_Event event = *event_ptr;
 
-          SDL_Log("line clicked");
-        } else if (event.button.button == SDL_BUTTON_LEFT &&
-                   check_bound(eraser_button, event.button.x, event.button.y)) {
-          current_tool.selected_tool = TOOL_ERASER;
-          SDL_Log("eraser clicked");
-        } else if (event.button.button == SDL_BUTTON_LEFT &&
-                   check_bound(rectangle_button, event.button.x,
-                               event.button.y)) {
-          current_tool.selected_tool = TOOL_RECTANGLE;
-          SDL_Log("rectangle clicked");
-        }
-        // Initial rendering for line and rectangle
-        if (!check_bound(line_button, event.button.x, event.button.y) && hold &&
-            current_tool.selected_tool == TOOL_LINE) {
-          line_tool(&line_storage, &line_no, event.button.x, event.button.y);
-        }
-        if (!check_bound(rectangle_button, event.button.x, event.button.y) &&
-            hold && current_tool.selected_tool == TOOL_RECTANGLE) {
-          rectangle_tool(&rectangle_storage, event.button.x, event.button.y,
-                         &rect_no);
-        }
+  switch (event.type) {
+  case SDL_EVENT_QUIT:
+    *done = true;
+    break;
 
-        break;
-      case SDL_EVENT_MOUSE_BUTTON_UP:
-        hold = false;
-        break;
-      case SDL_EVENT_MOUSE_MOTION:
-        hover_x = event.motion.x;
-        hover_y = event.motion.y;
-        if (!check_bound(pen_button, event.motion.x, event.motion.y) && hold &&
-            current_tool.selected_tool == TOOL_PEN) {
-          pencil_tool(renderer, &hold, &pixel_no, &pixel_storage,
-                      event.motion.x, event.motion.y,
-                      (float)(display_width * display_height));
-        } else if (!check_bound(eraser_button, event.motion.x,
-                                event.motion.y) &&
-                   hold && current_tool.selected_tool == TOOL_ERASER) {
-          point_eraser(&pixel_storage, event.motion.x, event.motion.y,
-                       pixel_no);
-          line_eraser(&line_storage, event.motion.x, event.motion.y, line_no);
-          rectangle_eraser(rectangle_storage, rect_no, event.motion.x,
-                           event.motion.y);
-        }
-        if (!check_bound(line_button, event.motion.x, event.motion.y) &&
-            current_tool.selected_tool == TOOL_LINE && hold && line_no > 0) {
-          (line_storage)[line_no - 1].x2 = event.motion.x;
-          (line_storage)[line_no - 1].y2 = event.motion.y;
-        }
-        if (!check_bound(rectangle_button, event.motion.x, event.motion.y) &&
-            current_tool.selected_tool == TOOL_RECTANGLE && hold &&
-            rect_no > 0) {
-          // SDL_Log("%f", rectangle_storage->Rectangle.x);
-          (rectangle_storage)[rect_no - 1].Rectangle.w =
-              event.motion.x - rectangle_storage[rect_no - 1].Rectangle.x;
-          (rectangle_storage)[rect_no - 1].Rectangle.h =
-              event.motion.y - rectangle_storage[rect_no - 1].Rectangle.y;
-        }
-        break;
-      case SDL_EVENT_KEY_DOWN:
-        if (event.key.key == SDLK_ESCAPE) {
-          current_tool.selected_tool = TOOL_NONE;
-        }
-      }
+  case SDL_EVENT_MOUSE_BUTTON_DOWN:
+    if (event.button.button == SDL_BUTTON_LEFT) {
+      hold = true;
     }
-    // log_tool(&current_tool);
-    SDL_SetRenderDrawColor(renderer, 18, 18, 18, 255);
-    SDL_RenderClear(renderer);
+    if (event.button.button == SDL_BUTTON_LEFT &&
+        check_bound(pen_button, event.button.x, event.button.y)) {
+      current_tool.selected_tool = TOOL_PEN;
+      SDL_Log("Pen clicked");
+    } else if (event.button.button == SDL_BUTTON_LEFT &&
+               check_bound(line_button, event.button.x, event.button.y)) {
+      current_tool.selected_tool = TOOL_LINE;
+      SDL_Log("line clicked");
+    } else if (event.button.button == SDL_BUTTON_LEFT &&
+               check_bound(eraser_button, event.button.x, event.button.y)) {
+      current_tool.selected_tool = TOOL_ERASER;
+      SDL_Log("eraser clicked");
+    } else if (event.button.button == SDL_BUTTON_LEFT &&
+               check_bound(rectangle_button, event.button.x, event.button.y)) {
+      current_tool.selected_tool = TOOL_RECTANGLE;
+      SDL_Log("rectangle clicked");
+    }
 
-    tool_panel(window, renderer, pencil_texture, line_texture, eraser_texture,
-               rectangle_texture, &done, &hover_x, &hover_y, &current_tool);
-    if (pixel_no > 0) {
-      for (int i = 0; i < pixel_no; i++) {
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        if (pixel_storage[i].visible) {
-          SDL_RenderFillRect(renderer, &pixel_storage[i].pixel);
-          // SDL_Log("Rendering %d pixels", rect_no);
-        }
-      }
+    if (!check_bound(line_button, event.button.x, event.button.y) && hold &&
+        current_tool.selected_tool == TOOL_LINE) {
+      line_tool(line_storage, &line_no, event.button.x, event.button.y);
     }
-    if (rect_no > 0) {
-      for (int i = 0; i < rect_no; i++) {
-        if (rectangle_storage[i].visible) {
-          SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-          SDL_RenderRect(renderer, &rectangle_storage[i].Rectangle);
-        }
-      }
+    if (!check_bound(rectangle_button, event.button.x, event.button.y) &&
+        hold && current_tool.selected_tool == TOOL_RECTANGLE) {
+      rectangle_tool(rectangle_storage, event.button.x, event.button.y,
+                     &rect_no);
     }
-    if (line_no > 0) {
-      for (int i = 0; i < line_no; i++) {
-        if (line_storage[i].visible) {
-          SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-          SDL_RenderLine(renderer, (line_storage)[i].x1, (line_storage)[i].y1,
-                         (line_storage)[i].x2, (line_storage)[i].y2);
-        }
-      }
+    break;
+
+  case SDL_EVENT_MOUSE_BUTTON_UP:
+    hold = false;
+    break;
+
+  case SDL_EVENT_MOUSE_MOTION:
+    hover_x = event.motion.x;
+    hover_y = event.motion.y;
+    if (!check_bound(pen_button, event.motion.x, event.motion.y) && hold &&
+        current_tool.selected_tool == TOOL_PEN) {
+      pencil_tool(renderer, &hold, &pixel_no, pixel_storage, event.motion.x,
+                  event.motion.y, (float)(display_width * display_height));
+    } else if (!check_bound(eraser_button, event.motion.x, event.motion.y) &&
+               hold && current_tool.selected_tool == TOOL_ERASER) {
+      point_eraser(pixel_storage, event.motion.x, event.motion.y, pixel_no);
+      line_eraser(line_storage, event.motion.x, event.motion.y, line_no);
+      rectangle_eraser(rectangle_storage, rect_no, event.motion.x,
+                       event.motion.y);
     }
-    SDL_RenderPresent(renderer);
+    if (!check_bound(line_button, event.motion.x, event.motion.y) &&
+        current_tool.selected_tool == TOOL_LINE && hold && line_no > 0) {
+      (*line_storage)[line_no - 1].x2 = event.motion.x;
+      (*line_storage)[line_no - 1].y2 = event.motion.y;
+    }
+    if (!check_bound(rectangle_button, event.motion.x, event.motion.y) &&
+        current_tool.selected_tool == TOOL_RECTANGLE && hold && rect_no > 0) {
+      (*rectangle_storage)[rect_no - 1].Rectangle.w =
+          event.motion.x - (*rectangle_storage)[rect_no - 1].Rectangle.x;
+      (*rectangle_storage)[rect_no - 1].Rectangle.h =
+          event.motion.y - (*rectangle_storage[rect_no - 1]).Rectangle.y;
+    }
+    break;
+
+  case SDL_EVENT_KEY_DOWN:
+    if (event.key.key == SDLK_ESCAPE) {
+      current_tool.selected_tool = TOOL_NONE;
+    }
+    break;
   }
-  free(pixel_storage);
-  free(line_storage);
-  free(rectangle_storage);
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
-  SDL_Quit();
-  return 0;
+
+  tool_panel(window, renderer, pencil_texture, line_texture, eraser_texture,
+             rectangle_texture, done, &hover_x, &hover_y, &current_tool);
+
+  if (pixel_no > 0) {
+    for (int i = 0; i < pixel_no; i++) {
+      SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+      if ((*pixel_storage)[i].visible)
+        SDL_RenderFillRect(renderer, &(*pixel_storage)[i].pixel);
+    }
+  }
+
+  if (rect_no > 0) {
+    for (int i = 0; i < rect_no; i++) {
+      if ((*rectangle_storage)[i].visible) {
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderRect(renderer, &(*rectangle_storage)[i].Rectangle);
+      }
+    }
+  }
+
+  if (line_no > 0) {
+    for (int i = 0; i < line_no; i++) {
+      if ((*line_storage)[i].visible) {
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderLine(renderer, (*line_storage)[i].x1, (*line_storage)[i].y1,
+                       (*line_storage)[i].x2, (*line_storage)[i].y2);
+      }
+    }
+  }
+
+  return *done;
 }

@@ -91,10 +91,11 @@ void line_eraser(Line **line_storage_ptr, float mouse_x, float mouse_y,
     SDL_Log("Erased %d lines near (%.2f, %.2f)", erased, mouse_x, mouse_y);
   }
 }
-void rectangle_eraser(Rectangle *rectangle_storage, int rect_no, float mouse_x,
-                      float mouse_y) {
+void rectangle_eraser(Rectangle **rectangle_storage_ptr, int rect_no,
+                      float mouse_x, float mouse_y) {
 
   // adds padding to define region of closeness
+  Rectangle *rectangle_storage = *rectangle_storage_ptr;
   for (int i = 0; i < rect_no; i++) {
     Rectangle *curr_rect = &rectangle_storage[i];
 

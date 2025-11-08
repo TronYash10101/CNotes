@@ -18,11 +18,10 @@ void rectangle_tool(Rectangle **rectangle_storage_ptr, float rect_x,
 
   *rectangle_storage_ptr = new_rectangle_storage;
 
+  *rect_no_ptr = rect_no + 1;
   (*rectangle_storage_ptr)[rect_no].Rectangle.x = rect_x;
   (*rectangle_storage_ptr)[rect_no].Rectangle.y = rect_y;
   (*rectangle_storage_ptr)[rect_no].Rectangle.w = 0;
   (*rectangle_storage_ptr)[rect_no].Rectangle.h = 0;
   (*rectangle_storage_ptr)[rect_no].visible = true;
-
-  *rect_no_ptr = rect_no + 1;
 }

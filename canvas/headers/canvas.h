@@ -1,3 +1,6 @@
+#ifndef CANVAS
+#define CANVAS
+
 #include "SDL3/SDL_init.h"
 #include "SDL3/SDL_log.h"
 #include "SDL3/SDL_render.h"
@@ -12,31 +15,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef CANVAS
-#define CANVAS
-
 #define pixel_size 3
 
-int display_height;
-int display_width;
-char WINDOW_NAME[] = "Canvas";
+extern int display_height;
+extern int display_width;
+extern char WINDOW_NAME[];
 
-int pixel_no = 0;
-int rect_no = 0;
-int line_no = 0;
+extern int pixel_no;
+extern int rect_no;
+extern int line_no;
 
-bool done = false;
-bool hold = false;
-float hover_x = 0.0f;
-float hover_y = 0.0f;
+extern float hover_x;
+extern float hover_y;
 
-char pencil_file[] = "D:/CNotes/canvas/UI/assets/pencil_texture.png";
-char line_file[] = "D:/CNotes/canvas/UI/assets/line_texture.png";
-char eraser_file[] = "D:/CNotes/canvas/UI/assets/eraser_texture.png";
-char rectangle_file[] = "D:/CNotes/canvas/UI/assets/rectangle_texture.png";
+extern char pencil_file[];
+extern char line_file[];
+extern char eraser_file[];
+extern char rectangle_file[];
 
 void log_tool(ToolSelected *current_tool);
 bool check_bound(Button_Pos button, float click_x, float click_y);
-int main(int argc, char *argv[]);
+int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
+           SDL_Event *event_ptr, Pixel **pixel_storage, Line **line_storage,
+           Rectangle **rectangle_storage, SDL_Texture *pencil_texture,
+           SDL_Texture *line_texture, SDL_Texture *eraser_texture,
+           SDL_Texture *rectangle_texture);
 
 #endif // !CANVAS
