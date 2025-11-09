@@ -1,5 +1,6 @@
 #include "canvas.h"
 #include "SDL3/SDL_log.h"
+#include "types.h"
 
 char WINDOW_NAME[] = "Canvas";
 
@@ -8,8 +9,6 @@ int rect_no = 0;
 int line_no = 0;
 
 static bool hold = false;
-float hover_x = 0.0f;
-float hover_y = 0.0f;
 
 char pencil_file[] = "D:/CNotes/canvas/UI/assets/pencil_texture.png";
 char line_file[] = "D:/CNotes/canvas/UI/assets/line_texture.png";
@@ -42,8 +41,8 @@ void log_tool(ToolSelected *current_tool) {
 
 bool check_bound(Button_Pos button, float click_x, float click_y) {
   bool in_bound = false;
-  if (click_x >= button.bg_rcrect.x &&
-      click_x <= button.bg_rcrect.x + button.bg_rcrect.w &&
+  if (SCALE_X(click_x) >= button.bg_rcrect.x &&
+      SCALE_X(click_x) <= button.bg_rcrect.x + button.bg_rcrect.w &&
       click_y >= button.bg_rcrect.y &&
       click_y <= button.bg_rcrect.y + button.bg_rcrect.h) {
     in_bound = true;
@@ -94,12 +93,13 @@ int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
 
     if (!check_bound(line_button, event.button.x, event.button.y) && hold &&
         current_tool.selected_tool == TOOL_LINE) {
-      line_tool(line_storage, &line_no, event.button.x, event.button.y);
+      line_tool(line_storage, &line_no, (event.button.x - Offset_X),
+                event.button.y);
     }
     if (!check_bound(rectangle_button, event.button.x, event.button.y) &&
         hold && current_tool.selected_tool == TOOL_RECTANGLE) {
-      rectangle_tool(rectangle_storage, event.button.x, event.button.y,
-                     &rect_no);
+      rectangle_tool(rectangle_storage, (event.button.x - Offset_X),
+                     event.button.y, &rect_no);
     }
     break;
 
@@ -108,28 +108,29 @@ int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
     break;
 
   case SDL_EVENT_MOUSE_MOTION:
-    hover_x = event.motion.x;
-    hover_y = event.motion.y;
     if (!check_bound(pen_button, event.motion.x, event.motion.y) && hold &&
         current_tool.selected_tool == TOOL_PEN) {
-      pencil_tool(renderer, &hold, &pixel_no, pixel_storage, event.motion.x,
-                  event.motion.y, (float)(display_width * display_height));
+      pencil_tool(renderer, &hold, &pixel_no, pixel_storage,
+                  (event.motion.x - Offset_X), event.motion.y,
+                  (float)(display_width * display_height));
     } else if (!check_bound(eraser_button, event.motion.x, event.motion.y) &&
                hold && current_tool.selected_tool == TOOL_ERASER) {
-      point_eraser(pixel_storage, event.motion.x, event.motion.y, pixel_no);
+      point_eraser(pixel_storage, (event.motion.x - Offset_X), event.motion.y,
+                   pixel_no);
       line_eraser(line_storage, event.motion.x, event.motion.y, line_no);
       rectangle_eraser(rectangle_storage, rect_no, event.motion.x,
                        event.motion.y);
     }
     if (!check_bound(line_button, event.motion.x, event.motion.y) &&
         current_tool.selected_tool == TOOL_LINE && hold && line_no > 0) {
-      (*line_storage)[line_no - 1].x2 = event.motion.x;
+      (*line_storage)[line_no - 1].x2 = (event.motion.x - Offset_X);
       (*line_storage)[line_no - 1].y2 = event.motion.y;
     }
     if (!check_bound(rectangle_button, event.motion.x, event.motion.y) &&
         current_tool.selected_tool == TOOL_RECTANGLE && hold && rect_no > 0) {
       (*rectangle_storage)[rect_no - 1].Rectangle.w =
-          event.motion.x - (*rectangle_storage)[rect_no - 1].Rectangle.x;
+          event.motion.x - (*rectangle_storage)[rect_no - 1].Rectangle.x -
+          Offset_X;
       (*rectangle_storage)[rect_no - 1].Rectangle.h =
           event.motion.y - (*rectangle_storage[rect_no - 1]).Rectangle.y;
     }
@@ -141,9 +142,10 @@ int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
     }
     break;
   }
-
+  log_tool(&current_tool);
   tool_panel(window, renderer, pencil_texture, line_texture, eraser_texture,
-             rectangle_texture, done, &hover_x, &hover_y, &current_tool);
+             rectangle_texture, done, &event.motion.x, &event.motion.y,
+             &current_tool);
 
   if (pixel_no > 0) {
     for (int i = 0; i < pixel_no; i++) {

@@ -19,8 +19,6 @@ int main(int argc, char *argv[]) {
   Line *line_storage = NULL;
   Rectangle *rectangle_storage = NULL;
 
-  SDL_FRect canvas_area = {0, 0, 1920, 1080};
-
   SDL_Window *parent_window = SDL_CreateWindow(
       "CNotes", 1920, 1080, SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE);
   SDL_Renderer *parent_renderer = SDL_CreateRenderer(parent_window, NULL);
@@ -40,7 +38,7 @@ int main(int argc, char *argv[]) {
 
   SDL_Texture *canvas_texture =
       SDL_CreateTexture(parent_renderer, SDL_PIXELFORMAT_RGBA8888,
-                        SDL_TEXTUREACCESS_TARGET, 1920, 1080);
+                        SDL_TEXTUREACCESS_TARGET, 1420, 1080);
 
   // Each frame:
   while (!done) {
@@ -65,6 +63,7 @@ int main(int argc, char *argv[]) {
       SDL_FRect dst = {500, 0, 1420, 1080}; // your left-side viewport
       SDL_RenderTexture(parent_renderer, canvas_texture, NULL, &dst);
       SDL_RenderPresent(parent_renderer);
+      SDL_Log("%f, %f", event.motion.x, event.motion.y);
     }
   }
 
