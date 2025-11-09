@@ -115,18 +115,18 @@ int notebook(SDL_Window *notebook_window, SDL_Renderer *notebook_renderer,
         TTF_CreateText(engine, font, line_buffer.word_buffer[0].buffer, 0);
     TTF_GetTextSize(cursor_word, &text_width, &text_height);
     render_caret(renderer, text_height, text_width,
-                 ((line_skip * 2) * (line_count - 1)));
+                 ((line_skip) * (line_count - 1)));
     TTF_DestroyText(cursor_word);
   }
 
   if (word) {
     TTF_SetTextColor(word, 255, 255, 255, 255);
-    TTF_DrawRendererText(word, 0, (line_skip * 2));
+    TTF_DrawRendererText(word, 0, 0);
   }
 
   for (int line_no = 0; line_no < line_count; line_no++) {
     line_bg_storage[line_no].x = 0;
-    line_bg_storage[line_no].y = (line_skip * 2) * (line_no + 1);
+    line_bg_storage[line_no].y = (line_skip) * (line_no + 1);
     line_bg_storage[line_no].w = 1920;
     line_bg_storage[line_no].h = 1;
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);

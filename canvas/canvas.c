@@ -117,7 +117,8 @@ int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
                hold && current_tool.selected_tool == TOOL_ERASER) {
       point_eraser(pixel_storage, (event.motion.x - Offset_X), event.motion.y,
                    pixel_no);
-      line_eraser(line_storage, event.motion.x, event.motion.y, line_no);
+      line_eraser(line_storage, (event.motion.x - Offset_X), event.motion.y,
+                  line_no);
       rectangle_eraser(rectangle_storage, rect_no, event.motion.x,
                        event.motion.y);
     }
@@ -142,7 +143,7 @@ int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
     }
     break;
   }
-  log_tool(&current_tool);
+  // log_tool(&current_tool);
   tool_panel(window, renderer, pencil_texture, line_texture, eraser_texture,
              rectangle_texture, done, &event.motion.x, &event.motion.y,
              &current_tool);
