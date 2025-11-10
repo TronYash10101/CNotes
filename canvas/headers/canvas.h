@@ -35,6 +35,8 @@ extern char rectangle_file[];
 
 void log_tool(ToolSelected *current_tool);
 bool check_bound(Button_Pos button, float click_x, float click_y);
+void set_canvas_color(Colors color);
+bool check_color(SDL_FRect button, float click_x, float click_y);
 int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
            SDL_Event *event_ptr, Pixel **pixel_storage, Line **line_storage,
            Rectangle **rectangle_storage, SDL_Texture *pencil_texture,

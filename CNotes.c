@@ -76,6 +76,9 @@ int main(int argc, char *argv[]) {
 
       SDL_RenderPresent(parent_renderer);
     }
+    // THE CURSOR DOES NOT BLINK AS FUNCTIONS ARE BEING ONLY CALLED ON EVENT
+    // CHANGE, SIMPLEST SOLUTION CAN BE TO RENDER ENTIRE PART AGAIN HERE(BUT
+    // MAYBE THINK OF SOMETHING ELSE)
   }
 
   free(pixel_storage);

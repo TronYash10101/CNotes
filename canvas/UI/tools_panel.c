@@ -21,6 +21,16 @@ Button_Pos rectangle_button = {
     {SCALE_X(1800.0f), 200.0f + (3 * button_gap), icon_height, icon_width},
     {SCALE_X(1795.0f), 195.0f + (3 * button_gap), button_height, button_width}};
 
+Color_Picker_Rects color_picker_rects = {
+    {SCALE_X(1795.0f), 195.0f + (4 * button_gap), button_height - 20,
+     button_width - 20},
+    {SCALE_X(1900.0f), 195.0f + (4 * button_gap), button_height - 20,
+     button_width - 20},
+    {SCALE_X(1795.0f), 195.0f + (5 * button_gap), button_height - 20,
+     button_width - 20},
+    {SCALE_X(1900.0f), 195.0f + (5 * button_gap), button_height - 20,
+     button_width - 20}};
+
 /* Uint32 PEN_TOOL_EVENT;
 Uint32 LINE_TOOL_EVENT; */
 
@@ -54,4 +64,5 @@ void tool_panel(SDL_Window *window, SDL_Renderer *renderer,
   button_ui(window, renderer, rectangle_texture, rectangle_button.srcrect,
             rectangle_button.bg_rcrect, rectangle_button.drcrect, mouse_x,
             mouse_y, selected_tool, TOOL_RECTANGLE);
+  render_color_picker(renderer, color_picker_rects);
 }

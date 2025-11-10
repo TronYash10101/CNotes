@@ -6,6 +6,8 @@
 #ifndef BUTTON_UI
 #define BUTTON_UI
 
+void render_color_picker(SDL_Renderer *renderer, Color_Picker_Rects rects);
+
 void button_ui(SDL_Window *window, SDL_Renderer *renderer, SDL_Texture *texture,
                SDL_FRect srcrect, SDL_FRect b_srcrect, SDL_FRect dstrect,
                float *mouse_x, float *mouse_y, ToolSelected *selected_tool,

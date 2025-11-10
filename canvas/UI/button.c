@@ -9,6 +9,19 @@
 #include <stdio.h>
 #include <tools_panel.h>
 
+void render_color_picker(SDL_Renderer *renderer, Color_Picker_Rects rects) {
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+  SDL_RenderFillRect(renderer, &rects.white);
+
+  SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+  SDL_RenderFillRect(renderer, &rects.red);
+
+  SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+  SDL_RenderFillRect(renderer, &rects.green);
+
+  SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+  SDL_RenderFillRect(renderer, &rects.blue);
+}
 void button_ui(SDL_Window *window, SDL_Renderer *renderer, SDL_Texture *texture,
                SDL_FRect srcrect, SDL_FRect b_srcrect, SDL_FRect dstrect,
                float *mouse_x, float *mouse_y, ToolSelected *selected_tool,

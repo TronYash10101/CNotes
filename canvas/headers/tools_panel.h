@@ -34,6 +34,7 @@ extern Button_Pos pen_button;
 extern Button_Pos line_button;
 extern Button_Pos eraser_button;
 extern Button_Pos rectangle_button;
+extern Color_Picker_Rects color_picker_rects;
 extern void tool_panel(SDL_Window *window, SDL_Renderer *renderer,
                        SDL_Texture *pencil_texture, SDL_Texture *line_texture,
                        SDL_Texture *eraser_texture,

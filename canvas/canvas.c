@@ -9,6 +9,7 @@ int rect_no = 0;
 int line_no = 0;
 
 static bool hold = false;
+static SDL_Color current_canvas_color = {255, 255, 255, 255};
 
 char pencil_file[] = "D:/CNotes/canvas/UI/assets/pencil_texture.png";
 char line_file[] = "D:/CNotes/canvas/UI/assets/line_texture.png";
@@ -17,6 +18,33 @@ char rectangle_file[] = "D:/CNotes/canvas/UI/assets/rectangle_texture.png";
 
 int display_height, display_width;
 
+void set_canvas_color(Colors color) {
+  switch (color) {
+  case WHITE:
+    current_canvas_color = (SDL_Color){255, 255, 255, 255};
+    break;
+  case RED:
+    current_canvas_color = (SDL_Color){255, 0, 0, 255};
+    break;
+  case GREEN:
+    current_canvas_color = (SDL_Color){0, 255, 0, 255};
+    break;
+  case BLUE:
+    current_canvas_color = (SDL_Color){0, 0, 255, 255};
+    break;
+  default:
+    current_canvas_color = (SDL_Color){255, 255, 255, 255}; // default white
+    break;
+  }
+}
+bool check_color(SDL_FRect button, float click_x, float click_y) {
+  bool in_bound = false;
+  if (SCALE_X(click_x) >= button.x && SCALE_X(click_x) <= button.x + button.w &&
+      click_y >= button.y && click_y <= button.y + button.h) {
+    in_bound = true;
+  }
+  return in_bound;
+}
 void log_tool(ToolSelected *current_tool) {
 
   ToolType tool = current_tool->selected_tool;
@@ -90,6 +118,24 @@ int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
       current_tool.selected_tool = TOOL_RECTANGLE;
       SDL_Log("rectangle clicked");
     }
+    // set color
+    if (event.button.button == SDL_BUTTON_LEFT &&
+        check_color(color_picker_rects.white, event.button.x, event.button.y)) {
+      set_canvas_color(WHITE);
+
+    } else if (event.button.button == SDL_BUTTON_LEFT &&
+               check_color(color_picker_rects.red, event.button.x,
+                           event.button.y)) {
+      set_canvas_color(RED);
+    } else if (event.button.button == SDL_BUTTON_LEFT &&
+               check_color(color_picker_rects.green, event.button.x,
+                           event.button.y)) {
+      set_canvas_color(GREEN);
+    } else if (event.button.button == SDL_BUTTON_LEFT &&
+               check_color(color_picker_rects.blue, event.button.x,
+                           event.button.y)) {
+      set_canvas_color(BLUE);
+    }
 
     if (!check_bound(line_button, event.button.x, event.button.y) && hold &&
         current_tool.selected_tool == TOOL_LINE) {
@@ -143,14 +189,17 @@ int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
     }
     break;
   }
-  // log_tool(&current_tool);
+  SDL_Log("%d %d %d", current_canvas_color.r, current_canvas_color.g,
+          current_canvas_color.b);
   tool_panel(window, renderer, pencil_texture, line_texture, eraser_texture,
              rectangle_texture, done, &event.motion.x, &event.motion.y,
              &current_tool);
 
   if (pixel_no > 0) {
     for (int i = 0; i < pixel_no; i++) {
-      SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+      SDL_SetRenderDrawColor(renderer, current_canvas_color.r,
+                             current_canvas_color.g, current_canvas_color.b,
+                             255);
       if ((*pixel_storage)[i].visible)
         SDL_RenderFillRect(renderer, &(*pixel_storage)[i].pixel);
     }
@@ -159,7 +208,9 @@ int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
   if (rect_no > 0) {
     for (int i = 0; i < rect_no; i++) {
       if ((*rectangle_storage)[i].visible) {
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_SetRenderDrawColor(renderer, current_canvas_color.r,
+                               current_canvas_color.g, current_canvas_color.b,
+                               current_canvas_color.a);
         SDL_RenderRect(renderer, &(*rectangle_storage)[i].Rectangle);
       }
     }
@@ -168,7 +219,9 @@ int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
   if (line_no > 0) {
     for (int i = 0; i < line_no; i++) {
       if ((*line_storage)[i].visible) {
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_SetRenderDrawColor(renderer, current_canvas_color.r,
+                               current_canvas_color.g, current_canvas_color.b,
+                               current_canvas_color.a);
         SDL_RenderLine(renderer, (*line_storage)[i].x1, (*line_storage)[i].y1,
                        (*line_storage)[i].x2, (*line_storage)[i].y2);
       }
