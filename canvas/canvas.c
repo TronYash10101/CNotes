@@ -32,15 +32,13 @@ void set_canvas_color(Colors color) {
   case BLUE:
     current_canvas_color = (SDL_Color){0, 0, 255, 255};
     break;
-  default:
-    current_canvas_color = (SDL_Color){255, 255, 255, 255}; // default white
-    break;
   }
 }
 bool check_color(SDL_FRect button, float click_x, float click_y) {
   bool in_bound = false;
-  if (SCALE_X(click_x) >= button.x && SCALE_X(click_x) <= button.x + button.w &&
-      click_y >= button.y && click_y <= button.y + button.h) {
+  if ((click_x - Offset_X) >= button.x &&
+      (click_x - Offset_X) <= button.x + button.w && click_y >= button.y &&
+      click_y <= button.y + button.h) {
     in_bound = true;
   }
   return in_bound;

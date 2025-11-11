@@ -24,11 +24,11 @@ Button_Pos rectangle_button = {
 Color_Picker_Rects color_picker_rects = {
     {SCALE_X(1795.0f), 195.0f + (4 * button_gap), button_height - 20,
      button_width - 20},
-    {SCALE_X(1900.0f), 195.0f + (4 * button_gap), button_height - 20,
+    {SCALE_X(1850.0f), 195.0f + (4 * button_gap), button_height - 20,
      button_width - 20},
     {SCALE_X(1795.0f), 195.0f + (5 * button_gap), button_height - 20,
      button_width - 20},
-    {SCALE_X(1900.0f), 195.0f + (5 * button_gap), button_height - 20,
+    {SCALE_X(1850.0f), 195.0f + (5 * button_gap), button_height - 20,
      button_width - 20}};
 
 /* Uint32 PEN_TOOL_EVENT;
