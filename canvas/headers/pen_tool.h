@@ -11,10 +11,11 @@ extern Uint32 PEN_TOOL_EVENT;
 typedef struct {
   SDL_FRect pixel;
   bool visible;
+  SDL_Color color;
 } Pixel;
 
 void pencil_tool(SDL_Renderer *renderer, bool *hold_ptr, int *pixel_no_ptr,
                  Pixel **pixel_storage_ptr, float x_coord, float y_coord,
-                 float display_size);
+                 float display_size, SDL_Color color);
 
 #endif // !PENCIL_TOOL

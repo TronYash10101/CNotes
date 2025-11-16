@@ -26,9 +26,9 @@ Color_Picker_Rects color_picker_rects = {
      button_width - 20},
     {SCALE_X(1850.0f), 195.0f + (4 * button_gap), button_height - 20,
      button_width - 20},
-    {SCALE_X(1795.0f), 195.0f + (5 * button_gap), button_height - 20,
+    {SCALE_X(1795.0f), 195.0f + (4.5 * button_gap), button_height - 20,
      button_width - 20},
-    {SCALE_X(1850.0f), 195.0f + (5 * button_gap), button_height - 20,
+    {SCALE_X(1850.0f), 195.0f + (4.5 * button_gap), button_height - 20,
      button_width - 20}};
 
 /* Uint32 PEN_TOOL_EVENT;
@@ -44,8 +44,8 @@ void tool_panel(SDL_Window *window, SDL_Renderer *renderer,
   SDL_GetWindowSizeInPixels(window, &width, &height);
   *mouse_x = SCALE_X(*mouse_x);
 
-  SDL_FRect tools_panel_bg = {SCALE_X(1780.0f), 185.0f, 130.0f, 290.0f};
-  SDL_FRect shadow = {SCALE_X(1770.0f), 195.0f, 130.0f, 290.0f};
+  SDL_FRect tools_panel_bg = {SCALE_X(1780.0f), 185.0f, 130.0f, 390.0f};
+  SDL_FRect shadow = {SCALE_X(1770.0f), 195.0f, 130.0f, 390.0f};
   SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
   SDL_SetRenderDrawColor(renderer, 35, 35, 41, 255);
   SDL_RenderFillRect(renderer, &tools_panel_bg);

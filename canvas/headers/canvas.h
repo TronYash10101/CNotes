@@ -21,9 +21,9 @@ extern int display_height;
 extern int display_width;
 extern char WINDOW_NAME[];
 
-extern int pixel_no;
+/* extern int pixel_no;
 extern int rect_no;
-extern int line_no;
+extern int line_no; */
 
 extern float hover_x;
 extern float hover_y;

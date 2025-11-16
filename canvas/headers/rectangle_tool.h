@@ -11,8 +11,9 @@
 typedef struct {
   SDL_FRect Rectangle;
   bool visible;
+  SDL_Color color;
 } Rectangle;
 
 void rectangle_tool(Rectangle **rectangle_storage_ptr, float rect_x,
-                    float rect_y, int *rect_no_ptr);
+                    float rect_y, int *rect_no_ptr, SDL_Color color);
 #endif // !RECTANGLE_TOOL

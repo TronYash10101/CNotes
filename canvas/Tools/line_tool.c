@@ -5,7 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void line_tool(Line **line_storage, int *line_no_ptr, float x1, float y1) {
+void line_tool(Line **line_storage, int *line_no_ptr, float x1, float y1,
+               SDL_Color color) {
   int line_no = *line_no_ptr;
   Line *new_line_storage = realloc(*line_storage, (line_no + 1) * sizeof(Line));
 
@@ -20,4 +21,5 @@ void line_tool(Line **line_storage, int *line_no_ptr, float x1, float y1) {
   current_line->x2 = x1; // Initialize endpoint to start point (rubber banding)
   current_line->y2 = y1;
   current_line->visible = true;
+  current_line->color = color;
 }

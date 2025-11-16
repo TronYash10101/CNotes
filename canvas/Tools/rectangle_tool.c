@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 void rectangle_tool(Rectangle **rectangle_storage_ptr, float rect_x,
-                    float rect_y, int *rect_no_ptr) {
+                    float rect_y, int *rect_no_ptr, SDL_Color color) {
   int rect_no = *rect_no_ptr;
 
   Rectangle *new_rectangle_storage =
@@ -24,4 +24,5 @@ void rectangle_tool(Rectangle **rectangle_storage_ptr, float rect_x,
   (*rectangle_storage_ptr)[rect_no].Rectangle.w = 0;
   (*rectangle_storage_ptr)[rect_no].Rectangle.h = 0;
   (*rectangle_storage_ptr)[rect_no].visible = true;
+  (*rectangle_storage_ptr)[rect_no].color = color;
 }

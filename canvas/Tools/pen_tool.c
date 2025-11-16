@@ -6,7 +6,7 @@
 
 void pencil_tool(SDL_Renderer *renderer, bool *hold_ptr, int *pixel_no_ptr,
                  Pixel **pixel_storage_ptr, float x_coord, float y_coord,
-                 float display_size) {
+                 float display_size, SDL_Color color) {
 
   if (!*hold_ptr)
     return;
@@ -29,6 +29,7 @@ void pencil_tool(SDL_Renderer *renderer, bool *hold_ptr, int *pixel_no_ptr,
     (*pixel_storage_ptr)[pixel_no - 1].pixel.w = pixel_size;
     (*pixel_storage_ptr)[pixel_no - 1].pixel.h = pixel_size;
     (*pixel_storage_ptr)[pixel_no - 1].visible = true;
+    (*pixel_storage_ptr)[pixel_no - 1].color = color;
 
     *pixel_no_ptr = pixel_no;
   }

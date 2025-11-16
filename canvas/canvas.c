@@ -4,9 +4,9 @@
 
 char WINDOW_NAME[] = "Canvas";
 
-int pixel_no = 0;
-int rect_no = 0;
-int line_no = 0;
+static int pixel_no = 0;
+static int rect_no = 0;
+static int line_no = 0;
 
 static bool hold = false;
 static SDL_Color current_canvas_color = {255, 255, 255, 255};
@@ -138,12 +138,12 @@ int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
     if (!check_bound(line_button, event.button.x, event.button.y) && hold &&
         current_tool.selected_tool == TOOL_LINE) {
       line_tool(line_storage, &line_no, (event.button.x - Offset_X),
-                event.button.y);
+                event.button.y, current_canvas_color);
     }
     if (!check_bound(rectangle_button, event.button.x, event.button.y) &&
         hold && current_tool.selected_tool == TOOL_RECTANGLE) {
       rectangle_tool(rectangle_storage, (event.button.x - Offset_X),
-                     event.button.y, &rect_no);
+                     event.button.y, &rect_no, current_canvas_color);
     }
     break;
 
@@ -156,11 +156,12 @@ int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
         current_tool.selected_tool == TOOL_PEN) {
       pencil_tool(renderer, &hold, &pixel_no, pixel_storage,
                   (event.motion.x - Offset_X), event.motion.y,
-                  (float)(display_width * display_height));
+                  (float)(display_width * display_height),
+                  current_canvas_color);
     } else if (!check_bound(eraser_button, event.motion.x, event.motion.y) &&
                hold && current_tool.selected_tool == TOOL_ERASER) {
-      point_eraser(pixel_storage, (event.motion.x - Offset_X), event.motion.y,
-                   pixel_no);
+      point_eraser(renderer, pixel_storage, (event.motion.x - Offset_X),
+                   event.motion.y, pixel_no);
       line_eraser(line_storage, (event.motion.x - Offset_X), event.motion.y,
                   line_no);
       rectangle_eraser(rectangle_storage, rect_no, event.motion.x,
@@ -174,10 +175,11 @@ int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
     if (!check_bound(rectangle_button, event.motion.x, event.motion.y) &&
         current_tool.selected_tool == TOOL_RECTANGLE && hold && rect_no > 0) {
       (*rectangle_storage)[rect_no - 1].Rectangle.w =
-          event.motion.x - (*rectangle_storage)[rect_no - 1].Rectangle.x -
-          Offset_X;
+          (event.motion.x - Offset_X) -
+          (*rectangle_storage)[rect_no - 1].Rectangle.x;
       (*rectangle_storage)[rect_no - 1].Rectangle.h =
-          event.motion.y - (*rectangle_storage[rect_no - 1]).Rectangle.y;
+          (event.motion.y - Offset_Y) -
+          (*rectangle_storage)[rect_no - 1].Rectangle.y;
     }
     break;
 
@@ -187,17 +189,15 @@ int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
     }
     break;
   }
-  SDL_Log("%d %d %d", current_canvas_color.r, current_canvas_color.g,
-          current_canvas_color.b);
   tool_panel(window, renderer, pencil_texture, line_texture, eraser_texture,
              rectangle_texture, done, &event.motion.x, &event.motion.y,
              &current_tool);
 
   if (pixel_no > 0) {
     for (int i = 0; i < pixel_no; i++) {
-      SDL_SetRenderDrawColor(renderer, current_canvas_color.r,
-                             current_canvas_color.g, current_canvas_color.b,
-                             255);
+      SDL_SetRenderDrawColor(renderer, (*pixel_storage)[i].color.r,
+                             (*pixel_storage)[i].color.g,
+                             (*pixel_storage)[i].color.b, 255);
       if ((*pixel_storage)[i].visible)
         SDL_RenderFillRect(renderer, &(*pixel_storage)[i].pixel);
     }
@@ -206,10 +206,11 @@ int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
   if (rect_no > 0) {
     for (int i = 0; i < rect_no; i++) {
       if ((*rectangle_storage)[i].visible) {
-        SDL_SetRenderDrawColor(renderer, current_canvas_color.r,
-                               current_canvas_color.g, current_canvas_color.b,
-                               current_canvas_color.a);
-        SDL_RenderRect(renderer, &(*rectangle_storage)[i].Rectangle);
+        SDL_SetRenderDrawColor(renderer, (*rectangle_storage)[i].color.r,
+                               (*rectangle_storage)[i].color.g,
+                               (*rectangle_storage)[i].color.b,
+                               (*rectangle_storage)[i].color.a);
+        SDL_RenderRect(renderer, &((*rectangle_storage)[i].Rectangle));
       }
     }
   }
@@ -217,9 +218,9 @@ int canvas(SDL_Window *window, SDL_Renderer *renderer, bool *done,
   if (line_no > 0) {
     for (int i = 0; i < line_no; i++) {
       if ((*line_storage)[i].visible) {
-        SDL_SetRenderDrawColor(renderer, current_canvas_color.r,
-                               current_canvas_color.g, current_canvas_color.b,
-                               current_canvas_color.a);
+        SDL_SetRenderDrawColor(
+            renderer, (*line_storage)[i].color.r, (*line_storage)[i].color.g,
+            (*line_storage)[i].color.b, (*line_storage)[i].color.a);
         SDL_RenderLine(renderer, (*line_storage)[i].x1, (*line_storage)[i].y1,
                        (*line_storage)[i].x2, (*line_storage)[i].y2);
       }

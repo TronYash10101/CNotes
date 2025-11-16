@@ -8,13 +8,28 @@
 #include <stdlib.h>
 
 float eraser_size = 40;
-void point_eraser(Pixel **pixel_storage_ptr, float mouse_x, float mouse_y,
-                  int pixel_no) {
+
+void eraser_outline(SDL_Renderer *renderer, float mouse_x, float mouse_y,
+                    float theta) {
+  float x, y;
+  // for (theta = 0; theta < 360; theta++) {
+  x = eraser_size * cosf(theta);
+  y = eraser_size * sinf(theta);
+  SDL_FRect pt = {(mouse_x + x), (mouse_y + y), 3, 3};
+  SDL_SetRenderDrawColorFloat(renderer, 255, 0, 0, 255);
+  SDL_RenderFillRect(renderer, &pt);
+
+  // }
+}
+
+void point_eraser(SDL_Renderer *renderer, Pixel **pixel_storage_ptr,
+                  float mouse_x, float mouse_y, int pixel_no) {
 
   // getting double pointer as later realloc has to be used for moving erased
   // memory to stack
   Pixel *pixel_storage = *pixel_storage_ptr;
   int erased = 0;
+  static int theta = 0;
   // general equation of circle to know if point is inside or outside
   for (int i = 0; i < pixel_no; i++) {
     Pixel *curr_point = &pixel_storage[i];
@@ -27,8 +42,13 @@ void point_eraser(Pixel **pixel_storage_ptr, float mouse_x, float mouse_y,
       erased++;
     }
   }
-  /*   if (erased > 0)
-      SDL_Log("Erased %d pixels at (%.2f, %.2f)", erased, mouse_x, mouse_y); */
+  for (int x = 0; x < 30; x++) {
+    eraser_outline(renderer, mouse_x, mouse_y, theta);
+    theta += 5;
+    if (theta >= 360) {
+      theta = 0;
+    }
+  }
 }
 
 void line_eraser(Line **line_storage_ptr, float mouse_x, float mouse_y,

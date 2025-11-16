@@ -11,8 +11,10 @@ typedef struct {
   float x2;
   float y2;
   bool visible;
+  SDL_Color color;
 } Line;
 
 extern Uint32 LINE_TOOL_EVENT;
-void line_tool(Line **line_storage, int *line_no_ptr, float x1, float y1);
+void line_tool(Line **line_storage, int *line_no_ptr, float x1, float y1,
+               SDL_Color color);
 #endif // !LINE_TOOL
