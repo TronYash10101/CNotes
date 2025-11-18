@@ -37,14 +37,16 @@ void typing(LineBuffer *line_buffer, WordBuffer *curr_word, int *cursor_x,
 
   // BACKSPACE LOGIC
   if (typed_char[0] == '\b') {
+
+    const char *current_line;
+
     if (*cursor_x > 0) {
       *cursor_x -= 1;
       curr_word->buffer[*cursor_x] = '\0';
     }
 
     const char *last_newline = strrchr(curr_word->buffer, '\n');
-    const char *current_line =
-        last_newline ? last_newline + 1 : curr_word->buffer;
+    current_line = last_newline ? last_newline + 1 : curr_word->buffer;
     memset(line_buffer, 0, sizeof(*line_buffer));
     strcpy(line_buffer->word_buffer[0].buffer, current_line);
 
@@ -53,11 +55,13 @@ void typing(LineBuffer *line_buffer, WordBuffer *curr_word, int *cursor_x,
     } else if (*curr_line_word_count == 0 && *line_count > 1) {
       *line_count -= 1;
     }
+
     *curr_line_word_count = strlen(current_line);
-    SDL_Log("words %d && line no.:- %d", *curr_line_word_count, *line_count);
     return;
   }
 
+  SDL_Log("line_buffer:\n%s", line_buffer->word_buffer->buffer);
+  SDL_Log("curr_word_buffer:\n%s", curr_word->buffer);
   if (strcmp(typed_char, LEFT_SYMBOL) == 0 && *cursor_x > 0) {
     *cursor_x -= 1;
     *curr_line_word_count -= 1;
@@ -72,8 +76,6 @@ void typing(LineBuffer *line_buffer, WordBuffer *curr_word, int *cursor_x,
     *curr_line_word_count += 1;
     right_typing = true;
   }
-  SDL_Log("%d", left_typing);
-
   // TYPING LOGIC
   if (strcmp(typed_char, UP_SYMBOL) != 0 &&
       strcmp(typed_char, RIGHT_SYMBOL) != 0 &&
@@ -87,8 +89,6 @@ void typing(LineBuffer *line_buffer, WordBuffer *curr_word, int *cursor_x,
       memmove(&curr_word->buffer[*cursor_x + 1], &curr_word->buffer[*cursor_x],
               strlen(&curr_word->buffer[*cursor_x]) + 1);
       curr_word->buffer[*cursor_x] = *typed_char;
-      // SDL_Log("%s", line_buffer->word_buffer[0].buffer);
-      // Store text after cursor
       strcpy(temp_cpy, &curr_word->buffer[*cursor_x + 1]);
 
       if (*typed_char == '\n') {

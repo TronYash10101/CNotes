@@ -79,6 +79,27 @@ int main(int argc, char *argv[]) {
     // THE CURSOR DOES NOT BLINK AS FUNCTIONS ARE BEING ONLY CALLED ON EVENT
     // CHANGE, SIMPLEST SOLUTION CAN BE TO RENDER ENTIRE PART AGAIN HERE(BUT
     // MAYBE THINK OF SOMETHING ELSE)
+    SDL_SetRenderTarget(parent_renderer, canvas_texture);
+    SDL_RenderClear(parent_renderer);
+    canvas(parent_window, parent_renderer, &done, &event, &pixel_storage,
+           &line_storage, &rectangle_storage, pencil_texture, line_texture,
+           eraser_texture, rectangle_texture);
+
+    SDL_SetRenderTarget(parent_renderer, notebook_texture);
+    SDL_RenderClear(parent_renderer);
+    notebook(parent_window, parent_renderer, &done, &event);
+
+    SDL_SetRenderTarget(parent_renderer, NULL);
+    SDL_SetRenderDrawColor(parent_renderer, 18, 18, 18, 255);
+    SDL_RenderClear(parent_renderer);
+
+    SDL_FRect dst = {500, 0, 1420, 1080};
+    SDL_FRect dst_n = {0, 0, 500, 1080};
+
+    SDL_RenderTexture(parent_renderer, notebook_texture, NULL, &dst_n);
+    SDL_RenderTexture(parent_renderer, canvas_texture, NULL, &dst);
+
+    SDL_RenderPresent(parent_renderer);
   }
 
   free(pixel_storage);
